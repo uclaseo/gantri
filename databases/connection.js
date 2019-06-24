@@ -1,11 +1,8 @@
 const Sequelize = require('sequelize');
 const fs = require('fs');
 const csv = require('csv');
-const input = fs.createReadStream('./the-tate-collection.csv');
-const parser = csv.parse({
-  delimiter: ';',
-  columns: true
-});
+
+
 
 const config = require('../config.json');
 const { sequelize: { database, username, password, host } } = config;
@@ -96,46 +93,50 @@ Art.hasMany(Comments);
 Comments.belongsTo(Art);
 Comments.belongsTo(Users);
 
-// Comments.sync({ force: true})
-// Art.sync({ force: true });
-// Users.sync({ force: true });
+const importCSV = () => {
+  const input = fs.createReadStream('./the-tate-collection.csv');
+  const parser = csv.parse({
+    delimiter: ';',
+    columns: true
+  });
+  const transform = csv.transform((row) => {
+    const resultObject = {
+      id: row['id'],
+      accession_number: row['accession_number'],
+      artist: row['artist'],
+      artistRole: row['artistRole'],
+      artistId: row['artistId'],
+      title: row['title'],
+      dateText: row['dateText'],
+      medium: row['medium'],
+      creditLine: row['creditLine'],
+      year: row['year'],
+      acquisitionYear: row['acquisitionYear'],
+      dimensions: row['dimensions'],
+      width: row['width'],
+      height: row['height'],
+      depth: row['depth'],
+      units: row['units'],
+      inscription: row['inscription'],
+      thumbnailCopyright: row['thumbnailCopyright'],
+      thumbnailUrl: row['thumbnailUrl'],
+      url: row['url'],
+    };
+    Art.create(resultObject)
+      .then(() => {
+        console.log('CSV imported Successfully');
+      })
+      .catch((error) => {
+        console.log('CSV is not imported: ', error)
+      })
+  });
+  input.pipe(parser).pipe(transform);
+}
 
 sequelize
-  // .sync({ force: true })
   .sync()
   .then(() => {
-    const transform = csv.transform((row) => {
-      const resultObject = {
-        id: row['id'],
-        accession_number: row['accession_number'],
-        artist: row['artist'],
-        artistRole: row['artistRole'],
-        artistId: row['artistId'],
-        title: row['title'],
-        dateText: row['dateText'],
-        medium: row['medium'],
-        creditLine: row['creditLine'],
-        year: row['year'],
-        acquisitionYear: row['acquisitionYear'],
-        dimensions: row['dimensions'],
-        width: row['width'],
-        height: row['height'],
-        depth: row['depth'],
-        units: row['units'],
-        inscription: row['inscription'],
-        thumbnailCopyright: row['thumbnailCopyright'],
-        thumbnailUrl: row['thumbnailUrl'],
-        url: row['url'],
-      };
-      Art.create(resultObject)
-        .then(() => {
-          console.log('CSV imported Successfully');
-        })
-        .catch((error) => {
-          console.log('CSV is not imported: ', error)
-        })
-    });
-    input.pipe(parser).pipe(transform);
+    importCSV();
   });
 
 module.exports = {
