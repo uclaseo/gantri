@@ -41,9 +41,22 @@ const Art = sequelize.define('art', {
   year: {
     type: Sequelize.INTEGER,
   },
-  comments: {
-    type: Sequelize.INTEGER,
-  }
+  accession_number: Sequelize.STRING,
+  artistRole: Sequelize.STRING,
+  artistId: Sequelize.INTEGER,
+  dateText: Sequelize.STRING,
+  medium: Sequelize.STRING,
+  creditLine: Sequelize.STRING,
+  acquisitionYear: Sequelize.INTEGER,
+  dimension: Sequelize.STRING,
+  width: Sequelize.STRING,
+  height: Sequelize.STRING,
+  depth: Sequelize.STRING,
+  units: Sequelize.STRING,
+  inscription: Sequelize.STRING,
+  thumbnailCopyright: Sequelize.STRING,
+  thumbnailUrl: Sequelize.STRING,
+  url: Sequelize.STRING,
 });
 
 const Users = sequelize.define('users', {
@@ -54,7 +67,13 @@ const Users = sequelize.define('users', {
   },
   name: {
     type: Sequelize.STRING,
-  }
+  },
+  age: {
+    type: Sequelize.INTEGER,
+  },
+  location: {
+    type: Sequelize.STRING,
+  },
 });
 
 const Comments = sequelize.define('comments', {
@@ -63,43 +82,56 @@ const Comments = sequelize.define('comments', {
     primaryKey: true,
     autoIncrement: true,
   },
+  name: {
+    type: Sequelize.STRING,
+  },
   content: {
     type: Sequelize.STRING,
   }
 });
+
+Art.hasMany(Comments);
+Comments.belongsTo(Art);
+Comments.belongsTo(Users);
+
+// Comments.sync({ force: true})
+// Art.sync({ force: true });
+// Users.sync({ force: true });
+
 sequelize
-  .sync({ force: true })
+  // .sync({ force: true })
+  .sync()
   .then(() => {
     const transform = csv.transform((row) => {
       const resultObject = {
         id: row['id'],
-        // accession_number: row['accession_number'],
+        accession_number: row['accession_number'],
         artist: row['artist'],
-        // artistRole: row['artistRole'],
-        // artistId: row['artistId'],
+        artistRole: row['artistRole'],
+        artistId: row['artistId'],
         title: row['title'],
-        // dateText: row['dateText'],
-        // medium: row['medium'],
-        // creditLine: row['creditLine'],
+        dateText: row['dateText'],
+        medium: row['medium'],
+        creditLine: row['creditLine'],
         year: row['year'],
-        // acquisitionYear: row['acquisitionYear'],
-        // dimensions: row['dimensions'],
-        // width: row['width'],
-        // height: row['height'],
-        // depth: row['depth'],
-        // units: row['units'],
-        // inscription: row['inscription'],
-        // thumbnailCopyright: row['thumbnailCopyright'],
-        // thumbnailUrl: row['thumbnailUrl'],
-        // url: row['url'],
+        acquisitionYear: row['acquisitionYear'],
+        dimensions: row['dimensions'],
+        width: row['width'],
+        height: row['height'],
+        depth: row['depth'],
+        units: row['units'],
+        inscription: row['inscription'],
+        thumbnailCopyright: row['thumbnailCopyright'],
+        thumbnailUrl: row['thumbnailUrl'],
+        url: row['url'],
       };
-      Art.create(resultObject)
-        .then(() => {
-          console.log('CSV imported Successfully');
-        })
-        .catch((error) => {
-          console.log('CSV is not imported: ', error)
-        })
+      // Art.create(resultObject)
+      //   .then(() => {
+      //     console.log('CSV imported Successfully');
+      //   })
+      //   .catch((error) => {
+      //     console.log('CSV is not imported: ', error)
+      //   })
     });
     input.pipe(parser).pipe(transform);
   });
