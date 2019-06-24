@@ -4,7 +4,7 @@ const ArtController = {
   get: async (req, res) => {
     try {
       console.log('get');
-      const allArts = await Art.findAll();
+      const allArts = await Art.findAll({ limit: 100 });
       return res.status(200).send(allArts);
     } catch (error) {
       console.error('get error: ', error);
