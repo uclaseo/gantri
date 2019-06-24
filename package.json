@@ -10,7 +10,9 @@
     "nodemon": "^1.19.1",
     "sequelize": "^5.8.12"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "csv": "^5.1.1"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js"
