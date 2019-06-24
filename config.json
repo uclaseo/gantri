@@ -1,0 +1,8 @@
+{
+  "sequelize": {
+    "database": "DATABASE",
+    "username": "USERNAME",
+    "password": "PASSWORD",
+    "host": "HOST"
+  }
+}
