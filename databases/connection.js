@@ -7,9 +7,11 @@ const parser = csv.parse({
   columns: true
 });
 
+const config = require('../config.json');
+const { sequelize: { database, username, password, host } } = config;
 
-const sequelize = new Sequelize('gantri', 'root', '', {
-  host: 'localhost',
+const sequelize = new Sequelize(database, username, password, {
+  host: host,
   dialect: 'mysql',
   define: {
     timestamps: false,
@@ -125,13 +127,13 @@ sequelize
         thumbnailUrl: row['thumbnailUrl'],
         url: row['url'],
       };
-      // Art.create(resultObject)
-      //   .then(() => {
-      //     console.log('CSV imported Successfully');
-      //   })
-      //   .catch((error) => {
-      //     console.log('CSV is not imported: ', error)
-      //   })
+      Art.create(resultObject)
+        .then(() => {
+          console.log('CSV imported Successfully');
+        })
+        .catch((error) => {
+          console.log('CSV is not imported: ', error)
+        })
     });
     input.pipe(parser).pipe(transform);
   });
