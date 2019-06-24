@@ -40,7 +40,31 @@ const sequelize = new Sequelize('gantri', 'root', '', {
       }
     });
 
+    const Users = sequelize.define('users', {
+      id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      name: {
+        type: Sequelize.STRING,
+      }
+    });
+
+    const Comments = sequelize.define('comments', {
+      id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      content: {
+        type: Sequelize.STRING,
+      }
+    });
+
 module.exports = {
   sequelize,
   Art,
+  Users,
+  Comments,
 };
