@@ -3,8 +3,14 @@ const { Art, Comments } = require('../databases/connection');
 const ArtController = {
   get: async (req, res) => {
     try {
-      console.log('get');
-      const allArts = await Art.findAll({ limit: 100 });
+      const allArts = await Art.findAll({
+        attributes: ['id', 'title', 'artist', 'year'],
+        include: {
+          model: Comments,
+          attributes: ['id', 'name', 'content', 'userId'],
+        },
+        limit: 100,
+      });
       return res.status(200).send(allArts);
     } catch (error) {
       console.error('get error: ', error);
@@ -17,6 +23,7 @@ const ArtController = {
       const { id } = req.params;
       const art = await Art.findOne({
         where: { id },
+        attributes: ['id', 'title', 'artist', 'year'],
         include: [
           {
             model: Comments,
@@ -37,8 +44,8 @@ const ArtController = {
       const { userID, name, content } = req.body;
 
 
-      if (userId) {
-        const comment = Comments.create({
+      if (userID) {
+        const comment = await Comments.create({
           userId: userID,
           artId: id,
           name,
@@ -60,14 +67,17 @@ const ArtController = {
           nameExists = true;
         }
       });
-      if (!nameExists) {
-        const comment = Comments.create({
-          artId: id,
-          name,
-          content,
-        });
-        return res.status(200).send(comment);
+
+      if (nameExists) {
+        return res.send('You can only add one comment per name without userId');
       }
+
+      const comment = await Comments.create({
+        artId: id,
+        name,
+        content,
+      });
+      return res.status(200).send(comment);
 
     } catch (error) {
       console.error('addComment error: ', error);
