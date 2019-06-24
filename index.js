@@ -1,19 +1,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
+
 const artRouter = require('./routes/art.routes');
 const userRouter = require('./routes/user.routes');
 
 const routers = [
   artRouter,
-  userRouter,
+  // userRouter,
 ];
+
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// app.use('/', routers);
+app.use('/api', routers);
 
 const PORT = 3000;
 
